@@ -6,24 +6,53 @@
 //
 
 import SwiftUI
+import Domain
 
 struct BroadcastView: View {
-    
-    // view는 타입만알고 직접 인스턴스를 생성하지 않았따. 클린아키텍처로 가즈아아
-    // viewModel = BroadcastViewModel()을 하지 않았따.
-    // view가 재생성되어도 초기화 안되게 state상태값가지고 잇기.
     @StateObject private var viewModel: BroadcastViewModel
-    
+
     init(viewModel: BroadcastViewModel) {
-        // 초기화
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-    
+
     var body: some View {
-        Text("Hello, BroadCast!")
+        VStack {
+            if viewModel.isLoading {
+                ProgressView("로딩 중...")
+            } else if !viewModel.errMsg.isEmpty {
+                Text(viewModel.errMsg)
+                    .foregroundColor(.red)
+            } else {
+                List(viewModel.broadcastList, id: \.casterId) { broadcast in
+                    VStack(alignment: .leading) {
+                        Text(broadcast.title)
+                            .font(.headline)
+                        Text(broadcast.casterId)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+        }
+        .task {  // 화면 나타날 때 자동 로드
+            await viewModel.loadBroadcastList()
+        }
     }
 }
 
 #Preview {
-    BroadcastView(viewModel: BroadcastViewModel())
+    let useCase = PreviewBroadcastUseCase()
+    let viewModel = BroadcastViewModel(broadcastUseCase: useCase)
+
+    BroadcastView(viewModel: viewModel)
 }
+
+final class PreviewBroadcastUseCase: BroadcastUseCase {
+    func execute() async throws -> [BroadcastEntity] {
+        [
+            BroadcastEntity(title: "테스트 방송 1", casterId: "caster01"),
+            BroadcastEntity(title: "테스트 방송 2", casterId: "caster02")
+        ]
+    }
+}
+

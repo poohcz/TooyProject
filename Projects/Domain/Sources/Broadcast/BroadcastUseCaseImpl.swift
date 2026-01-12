@@ -7,25 +7,17 @@
 
 import Foundation
 
-class BroadcastUseCaseImpl: BroadcastUseCase {
-
+public final class BroadcastUseCaseImpl: BroadcastUseCase {
     
-
-
-//    private let repository: BroadcastRepository
-//    
-//    init(repository: BroadcastRepository) {
-//        self.repository = repository
-//    }
+    private let repository: BroadcastRepository
     
-    // 상속받은거긴때문에 BroadcastUseCase에 정의내린거 자동으로 add추가하라고 나옴.
-    func joinBroadcast() {
-        <#code#>
+    public init(repository: BroadcastRepository) {
+        self.repository = repository
     }
     
-    func getBroadcastList() -> [BroadcastEntity] {
-        <#code#>
+    public func execute() async throws -> [BroadcastEntity] {
+        try await repository.loadBroadcastList()
     }
-    
     
 }
+
