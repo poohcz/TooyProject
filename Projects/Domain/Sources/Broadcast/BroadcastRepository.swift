@@ -9,5 +9,5 @@ import Foundation
 
 
 public protocol BroadcastRepository {
-    func loadBroadcastList() async throws -> [BroadcastEntity]
+    func loadBroadcastList() async throws -> [BroadcastModel]
 }

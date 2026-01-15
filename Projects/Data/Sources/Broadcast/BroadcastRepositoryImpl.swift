@@ -19,7 +19,7 @@ public final class BroadcastRepositoryImpl: BroadcastRepository {
         self.mapper = BroadcastMapper()
     }
     
-    public func loadBroadcastList() async throws -> [Domain.BroadcastEntity] {
+    public func loadBroadcastList() async throws -> [Domain.BroadcastModel] {
         let dto = try await apiService.loadBroadcastList()
         return mapper.map(dtoList: dto.broadcastList)
     }

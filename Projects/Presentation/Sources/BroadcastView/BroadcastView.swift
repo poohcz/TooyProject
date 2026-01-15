@@ -48,10 +48,10 @@ struct BroadcastView: View {
 }
 
 final class PreviewBroadcastUseCase: BroadcastUseCase {
-    func execute() async throws -> [BroadcastEntity] {
+    func execute() async throws -> [BroadcastModel] {
         [
-            BroadcastEntity(title: "테스트 방송 1", casterId: "caster01"),
-            BroadcastEntity(title: "테스트 방송 2", casterId: "caster02")
+            BroadcastModel(title: "테스트 방송 1", casterId: "caster01"),
+            BroadcastModel(title: "테스트 방송 2", casterId: "caster02")
         ]
     }
 }

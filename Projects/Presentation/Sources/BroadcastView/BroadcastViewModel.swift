@@ -12,7 +12,7 @@ import Domain
 @MainActor
 class BroadcastViewModel: ObservableObject {
     
-    @Published var broadcastList: [BroadcastEntity] = []
+    @Published var broadcastList: [BroadcastModel] = []
     @Published var isLoading: Bool = false
     @Published var errMsg: String = ""
     

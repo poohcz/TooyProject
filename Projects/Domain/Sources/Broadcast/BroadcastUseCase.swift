@@ -16,5 +16,5 @@ public protocol BroadcastUseCase {
     // 일단 삭제
 //    func joinBroadcast()
     
-    func execute() async throws -> [BroadcastEntity]
+    func execute() async throws -> [BroadcastModel]
 }

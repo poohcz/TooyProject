@@ -15,7 +15,7 @@ public final class BroadcastUseCaseImpl: BroadcastUseCase {
         self.repository = repository
     }
     
-    public func execute() async throws -> [BroadcastEntity] {
+    public func execute() async throws -> [BroadcastModel] {
         try await repository.loadBroadcastList()
     }
     
