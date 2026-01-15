@@ -3,13 +3,14 @@ import ProjectDescription
 let project = Project(
     name: "ToyProject",
     targets: [
+
         // MARK: - Domain
         .target(
             name: "Domain",
             destinations: .iOS,
             product: .framework,
-            bundleId: "dev.tuist.Domain",
-            sources: ["Sources/Domain/**"]
+            bundleId: "dev.tuist.domain",
+            sources: ["Projects/Domain/**"]
         ),
 
         // MARK: - Data
@@ -17,38 +18,37 @@ let project = Project(
             name: "Data",
             destinations: .iOS,
             product: .framework,
-            bundleId: "dev.tuist.Data",
-            sources: ["Sources/Data/**"],
+            bundleId: "dev.tuist.data",
+            sources: ["Projects/Data/**"],
             dependencies: [
                 .target(name: "Domain")
             ]
         ),
 
-        // MARK: - Presentation
+        // MARK: - Application
+        .target(
+            name: "Application",
+            destinations: .iOS,
+            product: .framework,
+            bundleId: "dev.tuist.application",
+            sources: ["Projects/Application/**"],
+            dependencies: [
+                .target(name: "Domain")
+            ]
+        ),
+
+        // MARK: - Presentation (App)
         .target(
             name: "Presentation",
             destinations: .iOS,
             product: .app,
-            bundleId: "dev.tuist.Presentation",
+            bundleId: "dev.tuist.presentation",
             infoPlist: .extendingDefault(with: [
                 "UILaunchScreen": [:]
             ]),
-            sources: ["Sources/Presentation/**"],
+            sources: ["Projects/Presentation/**"],
             dependencies: [
-                .target(name: "Domain"),
-                .target(name: "Data")
-            ]
-        ),
-
-        // MARK: - Tests
-        .target(
-            name: "PresentationTests",
-            destinations: .iOS,
-            product: .unitTests,
-            bundleId: "dev.tuist.PresentationTests",
-            sources: ["Sources/Tests/**"],
-            dependencies: [
-                .target(name: "Presentation")
+                .target(name: "Application")
             ]
         )
     ]
