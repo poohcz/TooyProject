@@ -8,18 +8,17 @@
 import Foundation
 import WebRTC
 
-/// 뷰모델이 유스케이스에게 시킬 수 있는 일들의 목록입니다.
+// usecase 함수들. 프로토콜로 정의.
 public protocol WebRTCUseCase {
-    /// 방에 참여하고 발생하는 이벤트들을 실시간 스트림으로 반환합니다.
+    // 방에들어오면 비동기로 스트림 처리.
+    // 질문예상: 학새잉 들어오면 방만들수잇나???
+    // 답변: 지금은 사이드 프로젝트라서 하드코딩으로 해놓았다. 추후에 서버에서 오는 토큰으로 버튼 선생일때만 보이게 할 것이다. 일단 Enum으로 UserRole로 나눠났었고, 나중에 할수있다.
     func executeJoin(role: UserRole) async -> AsyncStream<WebRTCEvent>
     
-    /// 방을 나갈 때 호출합니다.
     func executeLeave()
     
-    /// 내 로컬 카메라 트랙을 가져옵니다.
     func getLocalVideoTrack() -> RTCVideoTrack?
     
-    /// setAudio, setVideo입니다용.
     func configureAudio(isOn: Bool)
     func configureVideo(isOn: Bool)
 }
