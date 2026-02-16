@@ -2,45 +2,35 @@
 //  RootView.swift
 //  Presentation
 //
-//  Created by 김동율 on 1/7/26.
-//
-
 
 import SwiftUI
-import Data  // import 추가
-import Domain  // 이것도 필요할 수 있음
+import Domain
+import Data
 
 public struct RootView: View {
-    
-    public init() {}
-    
-    // body는 1개만!
+    // 앱이 살아있는 동안 객체들을 유지하기 위해 State로 관리합니다.
+    @StateObject private var webRTCViewModel: WebRTCViewModel
+
+    public init() {
+        // 의존성 주입 (Dependency Injection) 로직
+        let manager = WebRTCManager()
+        let useCase = WebRTCUseCaseImpl(webRTCManager: manager)
+        _webRTCViewModel = StateObject(wrappedValue: WebRTCViewModel(useCase: useCase))
+    }
+
     public var body: some View {
         TabView {
-            makeBroadcastView()
-                .tabItem {
-                    Label("Broadcast", systemImage: "video")
-                }
-            WebRTCView()
+            // ... 생략 ...
+
+            WebRTCView(viewModel: webRTCViewModel)
                 .tabItem {
                     Label("WebRTC", systemImage: "video.square.fill")
                 }
-            ChatView()
-                .tabItem {
-                    Label("Chat", systemImage: "message")
-                }
+            
+            // ... 생략 ...
         }
     }
-    
-    // DI 함수
-    private func makeBroadcastView() -> some View {
-        let repository = BroadcastRepositoryImpl()
-        let useCase = BroadcastUseCaseImpl(repository: repository)
-        let viewModel = BroadcastViewModel(broadcastUseCase: useCase)
-        return BroadcastView(viewModel: viewModel)
-    }
 }
-
 #Preview {
     RootView()
 }

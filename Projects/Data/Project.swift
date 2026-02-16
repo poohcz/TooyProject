@@ -7,10 +7,11 @@ let project = Project(
             name: "Data",
             destinations: .iOS,
             product: .framework,
-            bundleId: "dev.tuist.Data",
+            bundleId: "dev.dan12.Data",
             sources: ["Sources/**"],
             dependencies: [
-                .project(target: "Domain", path: "../Domain")
+                .project(target: "Domain", path: "../Domain"),
+                
             ]
         )
     ]
