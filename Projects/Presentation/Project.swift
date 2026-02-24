@@ -22,7 +22,7 @@ let project = Project(
             destinations: [.iPhone],
             product: .app,
             bundleId: "dev.dan12.Presentation",
-            deploymentTargets: .iOS("15.0"),
+            deploymentTargets: .iOS("18.0"),
             infoPlist: .extendingDefault(with: [
                 "NSCameraUsageDescription": "방송을 위해 카메라 접근이 필요합니다.",
                 "NSMicrophoneUsageDescription": "방송을 위해 마이크 접근이 필요합니다.",

@@ -8,11 +8,8 @@ let project = Project(
             destinations: .iOS,
             product: .framework,
             bundleId: "dev.dan12.Domain",
+            deploymentTargets: .iOS("18.0"),
             sources: ["Sources/**"]
         )
     ]
 )
-
-
-
-

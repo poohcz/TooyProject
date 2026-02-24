@@ -8,10 +8,10 @@ let project = Project(
             destinations: .iOS,
             product: .framework,
             bundleId: "dev.dan12.Data",
+            deploymentTargets: .iOS("18.0"),
             sources: ["Sources/**"],
             dependencies: [
-                .project(target: "Domain", path: "../Domain"),
-                
+                .project(target: "Domain", path: "../Domain")
             ]
         )
     ]
