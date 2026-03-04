@@ -16,10 +16,14 @@ let project = Project(
                     ],
                 ]
             ),
-            buildableFolders: [
-                "ToyProject/Sources",
-                "ToyProject/Resources",
-            ],
+            settings: .settings(
+                base: [
+                    "DEVELOPMENT_TEAM": "7X4A63UK4A",
+                    "CODE_SIGN_STYLE": "Automatic"
+                ]
+            ),
+            sources: ["ToyProject/Sources/**"],
+            resources: ["ToyProject/Resources/**"],
             dependencies: []
         ),
         .target(
@@ -28,9 +32,14 @@ let project = Project(
             product: .unitTests,
             bundleId: "dev.tuist.ToyProjectTests",
             infoPlist: .default,
-            buildableFolders: [
-                "ToyProject/Tests"
-            ],
+            // 💡 테스트 타겟에도 동일하게 추가해주면 편합니다.
+            settings: .settings(
+                base: [
+                    "DEVELOPMENT_TEAM": "7X4A63UK4A",
+                    "CODE_SIGN_STYLE": "Automatic"
+                ]
+            ),
+            sources: ["ToyProject/Tests/**"],
             dependencies: [.target(name: "ToyProject")]
         ),
     ]

@@ -23,12 +23,21 @@ public struct CreateRoomView: View {
             Color.black.ignoresSafeArea()
             
             // 1. 원격 영상 (학생 화면)
-            if let remoteTrack = viewModel.remoteStreams.values.first {
-                WebRTCVideoView(videoTrack: remoteTrack)
-                    .ignoresSafeArea()
-            } else {
+            if viewModel.remoteStreams.isEmpty {
                 Text("학생의 입장을 기다리고 있습니다...")
                     .foregroundColor(.white)
+            } else {
+                // 대충 일단 ui만들기. 나중에 고치자.
+                VStack(spacing: 0) {
+                    ForEach(Array(viewModel.remoteStreams.keys), id: \.self) { userId in
+                        if let track = viewModel.remoteStreams[userId] {
+                            WebRTCVideoView(videoTrack: track)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .clipped()
+                        }
+                    }
+                }
+                .ignoresSafeArea()
             }
             
             // 2. 내 영상 프리뷰 (우측 상단)
