@@ -26,7 +26,10 @@ let project = Project(
             infoPlist: .extendingDefault(with: [
                 "NSCameraUsageDescription": "방송을 위해 카메라 접근이 필요합니다.",
                 "NSMicrophoneUsageDescription": "방송을 위해 마이크 접근이 필요합니다.",
-                "NSLocalNetworkUsageDescription": "RTMP 서버 연결을 위해 로컬 네트워크 접근이 필요합니다."
+                "NSLocalNetworkUsageDescription": "RTMP 서버 연결을 위해 로컬 네트워크 접근이 필요합니다.",
+                "NSAppTransportSecurity": [
+                    "NSAllowsArbitraryLoads": true
+                ]
             ]),
             sources: ["Sources/**"],
             resources: ["Resources/**"],

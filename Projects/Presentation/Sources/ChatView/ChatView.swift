@@ -8,50 +8,50 @@
 
 import SwiftUI
 
-// 1. 메시지 모델
-struct ChatMessage: Identifiable {
-    let id = UUID()
-    let text: String
-    let isMe: Bool // 내가 보낸 건지, 상대방이 보낸 건지 구분
-}
-
 struct ChatView: View {
-    // 2. 상태 관리 (입력창 텍스트와 임시 메시지 목록)
+    @StateObject private var viewModel = ChatViewModel()
     @State private var inputText: String = ""
-    @State private var messages: [ChatMessage] = [
-        ChatMessage(text: "안녕하세요, 선생님!", isMe: false),
-        ChatMessage(text: "네 율 브로, 반가워요! 어떤 문제가 어렵나요?", isMe: true)
-    ]
-    
+
     var body: some View {
         VStack(spacing: 0) {
-            // 3. 채팅 내역 스크롤 영역
+            // 연결 상태 표시
+            if !viewModel.isConnected {
+                Text("서버 연결 중...")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .padding(.top, 5)
+            }
+            
+            // 채팅 내역
             ScrollView {
                 LazyVStack(spacing: 12) {
-                    ForEach(messages) { msg in
+                    ForEach(viewModel.messages) { msg in
                         ChatBubble(message: msg)
                     }
                 }
                 .padding()
             }
             .onTapGesture {
-                // 바탕을 누르면 키보드가 내려가게 합니다.
+                // 키보드 내리기
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
             
-            // 4. 하단 메시지 입력 영역
+            // 메시지 입력 및 전송
             HStack {
                 TextField("메시지를 입력하세요...", text: $inputText)
                     .padding(10)
                     .background(Color(uiColor: .systemGray6))
                     .cornerRadius(20)
                 
-                Button(action: sendMessage) {
-                    Image(systemName: "paperplane.fill") // 비행기 모양 전송 아이콘
+                Button(action: {
+                    viewModel.sendMessage(text: inputText)
+                    inputText = ""
+                }) {
+                    Image(systemName: "paperplane.fill")
                         .font(.system(size: 22))
-                        .foregroundColor(!inputText.isEmpty ? .blue : .gray)
+                        .foregroundColor(inputText.isEmpty ? .gray : .blue)
                 }
-                .disabled(inputText.isEmpty) // 빈 칸일 땐 버튼 비활성화
+                .disabled(inputText.isEmpty)
             }
             .padding()
             .background(Color.white)
@@ -59,18 +59,9 @@ struct ChatView: View {
         .navigationTitle("실시간 채팅")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
-    // 5. 메시지 전송 로직
-    private func sendMessage() {
-        guard !inputText.isEmpty else { return }
-        
-        let newMessage = ChatMessage(text: inputText, isMe: true)
-        messages.append(newMessage)
-        inputText = ""
-    }
 }
 
-// 6. 말풍선 컴포넌트
+// 말풍선 UI
 struct ChatBubble: View {
     let message: ChatMessage
     
@@ -90,5 +81,7 @@ struct ChatBubble: View {
 }
 
 #Preview {
-    ChatView()
+    NavigationView {
+        ChatView()
+    }
 }
