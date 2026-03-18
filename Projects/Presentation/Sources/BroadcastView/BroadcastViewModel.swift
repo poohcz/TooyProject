@@ -26,20 +26,15 @@ public final class BroadcastViewModel: ObservableObject {
         rtmpConnection.addEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
     }
     
-    
-    
-    
-    
-    
     @objc private func rtmpStatusHandler(_ notification: Notification) {
-        print("📡 RTMP 이벤트: \(notification)")
+        print(" RTMP 이벤트: \(notification)")
         DispatchQueue.main.async {
             self.statusMsg = "연결됨"
         }
     }
     
     @objc private func rtmpErrorHandler(_ notification: Notification) {
-        print("❌ RTMP 에러: \(notification)")
+        print("RTMP 에러: \(notification)")
         DispatchQueue.main.async {
             self.statusMsg = "연결 실패"
         }
@@ -50,21 +45,21 @@ public final class BroadcastViewModel: ObservableObject {
         
         rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio))
         
-        rtmpStream.videoSettings.bitRate = 1000 * 1000
+        rtmpStream.videoSettings.bitRate = 300 * 1000
         
-        print("🔴 RTMP 연결 시도")
+        print("RTMP 연결 시도")
         statusMsg = "🔄 연결 중..."
         
-        rtmpConnection.connect("rtmp://192.168.20.44:1935/live")
+        rtmpConnection.connect("rtmp://192.168.219.100:1935/live")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            print("🔴 publish 시작")
+            print("publish 시작")
             self.rtmpStream.publish("test")
         }
     }
 
     public func stopSession() {
-        print("⚫️ 중지")
+        print("중지")
         rtmpStream.close()
         rtmpConnection.close()
         statusMsg = "대기 중"

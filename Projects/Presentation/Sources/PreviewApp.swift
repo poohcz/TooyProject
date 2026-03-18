@@ -7,20 +7,19 @@
 
 import SwiftUI
 
-
 @main
 struct PreviewApp: App {
+    @State private var showSplash = true
+    
     var body: some Scene {
         WindowGroup {
-            RootView()
+            if showSplash {
+                SplashView(onAnimationFinished: {
+                    showSplash = false
+                })
+            } else {
+                RootView()
+            }
         }
-    }
-}
-
-
-
-struct RootView_Previews: PreviewProvider {
-    static var previews: some View {
-        RootView()
     }
 }

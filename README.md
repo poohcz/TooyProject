@@ -11,6 +11,11 @@
 1대N 시그널링 필수였었고 똑같이 오퍼앤설 보내고 불라불라 
 연결은 됐으니깐 클린아키텍처로 다시 쪼개고 해야지...  
 
+진짜 3시간 삽질 개욕나오네. tatbviewfloating 하...
+UIApplicationSupportsMultipleScenes: false 이게 핵심
+iOS 18에서 MultipleScenes가 true면 탭바가 floating으로 동작하는데, Tuist가 기본값으로 true를 넣음
+테스트한다고 새로만든 프로젝트에서는 false였음
+고맙다 AI...
 
 
 

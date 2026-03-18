@@ -14,12 +14,16 @@ let project = Project(
         .remote(
             url: "https://github.com/stasel/WebRTC.git",
             requirement: .upToNextMajor(from: "114.0.0")
+        ),
+        .remote(
+            url: "https://github.com/airbnb/lottie-ios.git",
+            requirement: .upToNextMajor(from: "4.4.1")
         )
     ],
     targets: [
         Target.target(
             name: "Presentation",
-            destinations: [.iPhone],
+            destinations: .iOS,
             product: .app,
             bundleId: "dev.dan12.Presentation",
             deploymentTargets: .iOS("18.0"),
@@ -29,6 +33,17 @@ let project = Project(
                 "NSLocalNetworkUsageDescription": "RTMP 서버 연결을 위해 로컬 네트워크 접근이 필요합니다.",
                 "NSAppTransportSecurity": [
                     "NSAllowsArbitraryLoads": true
+                ],
+                "UIBackgroundModes": [
+                    "audio"
+                ],
+                "UIApplicationSceneManifest": [
+                    "UIApplicationSupportsMultipleScenes": false,
+                    "UISceneConfigurations": [:]
+                ],
+                "UILaunchScreen": [
+                    "UIColorName": "",
+                    "UIImageName": ""
                 ]
             ]),
             sources: ["Sources/**"],
@@ -37,6 +52,7 @@ let project = Project(
                 .package(product: "HaishinKit"),
                 .package(product: "SocketIO"),
                 .package(product: "WebRTC"),
+                .package(product: "Lottie"),
                 .project(target: "Domain", path: "../Domain"),
                 .project(target: "Data", path: "../Data")
             ]

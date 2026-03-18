@@ -24,7 +24,7 @@ public struct CreateRoomView: View {
             
             // 1. 원격 영상 (학생 화면)
             if viewModel.remoteStreams.isEmpty {
-                Text("학생의 입장을 기다리고 있습니다...")
+                Text("학생의 입장을 기다리고 있습니다")
                     .foregroundColor(.white)
             } else {
                 // 대충 일단 ui만들기. 나중에 고치자.

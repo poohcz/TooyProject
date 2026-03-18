@@ -12,50 +12,41 @@ public struct WebRTCView: View {
     @State private var isCreatingRoom = false
     
     public init(viewModel: WebRTCViewModel) {
-        // StateObject 초기화 방식 주의
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     public var body: some View {
         VStack(spacing: 20) {
+            Spacer()
+            
             Text("과외 플랫폼")
                 .font(.largeTitle)
                 .bold()
+                .padding(.bottom, 20)
             
-            VStack {
-                Button {
-                    print("화면이동합시다")
-                    isCreatingRoom = true
-                } label: {
+            VStack(spacing: 16) {
+                Button { isCreatingRoom = true } label: {
                     Text("과외 방 만들기")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.blue)
                         .foregroundColor(.white)
                         .cornerRadius(12)
-                
                 }
                 
-                Button {
-                    print("화면이동합시다")
-                } label: {
+                Button { print("입장 로직") } label: {
                     Text("과외 방 드가자아")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(Color.blue.opacity(0.8))
                         .foregroundColor(.white)
                         .cornerRadius(12)
                 }
             }
+            .padding(.horizontal, 30)
+            
+            Spacer()
         }
-        .padding()
-        // fullScreenCover 전체화면. isCreatingRoom의 상태값으로 방이동
-        .fullScreenCover(isPresented: $isCreatingRoom) {
-            CreateRoomView(viewModel: viewModel)
-        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
-
-//#Preview {
-//    WebRTCView()
-//}

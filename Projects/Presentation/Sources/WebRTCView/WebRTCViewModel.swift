@@ -15,21 +15,17 @@ import Domain
 @MainActor
 public final class WebRTCViewModel: ObservableObject {
     
-    // MARK: - Combine Properties (UI가 관찰하는 상태)
     // 상대(학생) 영상 관리. 보면 딕셔너리.
     @Published public var remoteStreams: [String: RTCVideoTrack] = [:]
     @Published public var isMicOn: Bool = true
     @Published public var isCameraOn: Bool = true
     
-    // MARK: - Properties
     private let useCase: WebRTCUseCase
     
-    // MARK: - Initializer
     public init(useCase: WebRTCUseCase) {
         self.useCase = useCase
     }
     
-    // MARK: - Public Methods (UI에서 호출하는 인터페이스)
     // 방장이만든 방에 들어올때 실행되는거. 비동기로 처리했음.
     public func joinRoom(role: UserRole) {
         Task {
