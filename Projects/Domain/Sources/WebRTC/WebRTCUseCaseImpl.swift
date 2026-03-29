@@ -34,11 +34,11 @@ public final class WebRTCUseCaseImpl: WebRTCUseCase {
         return webRTCManager.localVideoTrack
     }
     
-    public func configureAudio(isOn: Bool) {
+    public func controlAudio(isOn: Bool) {
         webRTCManager.setAudio(isOn: isOn)
     }
 
-    public func configureVideo(isOn: Bool) {
+    public func controlVideo(isOn: Bool) {
         webRTCManager.setVideo(isOn: isOn)
     }
 }

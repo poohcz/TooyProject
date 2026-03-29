@@ -18,6 +18,13 @@ iOS 18에서 MultipleScenes가 true면 탭바가 floating으로 동작하는데,
 고맙다 AI...
 
 
+createroom처음에 zstack으로 감쌋다가 다시 수정함. 
+상대방화면에서 하는게 더 좋음. 
+createroom수정 중
+import webrtc 제거. 클린아키텍처 어긋남
+결국 선생이 만드는거라서 네이밍관련 설정. 
+
+
 
 헷갈려도 보고 또보고 보고 또 보고
 View (Presentation)

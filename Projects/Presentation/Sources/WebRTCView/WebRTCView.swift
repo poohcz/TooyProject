@@ -48,5 +48,8 @@ public struct WebRTCView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .fullScreenCover(isPresented: $isCreatingRoom) {
+            CreateRoomView(viewModel: viewModel)
+        }
     }
 }

@@ -6,100 +6,92 @@
 //
 
 import SwiftUI
-import WebRTC
 
-
-// 일단 1:1 만들고, 추후에 1:n 가능하다면... 일단은 p2p만....................
 public struct CreateRoomView: View {
     @ObservedObject var viewModel: WebRTCViewModel
     @Environment(\.dismiss) private var dismiss
-    
+
     public init(viewModel: WebRTCViewModel) {
         self.viewModel = viewModel
     }
-    
+
     public var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
+        StudentView(participantIDs: viewModel.remoteParticipantIDs)
+            .background(Color.black)
+            .ignoresSafeArea()
             
-            // 1. 원격 영상 (학생 화면)
-            if viewModel.remoteStreams.isEmpty {
-                Text("학생의 입장을 기다리고 있습니다")
-                    .foregroundColor(.white)
-            } else {
-                // 대충 일단 ui만들기. 나중에 고치자.
-                VStack(spacing: 0) {
-                    ForEach(Array(viewModel.remoteStreams.keys), id: \.self) { userId in
-                        if let track = viewModel.remoteStreams[userId] {
-                            WebRTCVideoView(videoTrack: track)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .clipped()
-                        }
-                    }
-                }
-                .ignoresSafeArea()
+            .overlay(alignment: .topTrailing) {
+                TeacherView(track: viewModel.getLocalVideoTrack())
+                    .padding(.top, 50)
+                    .padding(.trailing, 16)
             }
-            
-            // 2. 내 영상 프리뷰 (우측 상단)
-            VStack {
-                HStack {
-                    Spacer()
-                    if let localTrack = viewModel.getLocalVideoTrack() {
-                        WebRTCVideoView(videoTrack: localTrack)
-                            .frame(width: 120, height: 180)
-                            .cornerRadius(12)
-                            .padding()
-                    }
-                }
-                Spacer()
-            }
-            
-            // 3. 컨트롤 버튼들
-            VStack {
-                HStack {
-                    Button("나가기") {
-                        print("나갑시다")
+
+            .overlay(alignment: .bottom) {
+                ControlPad(
+                    isMicOn: viewModel.isMicOn,
+                    isCameraOn: viewModel.isCameraOn,
+                    onToggleMic: { viewModel.toggleMic() },
+                    onToggleCamera: { viewModel.toggleCamera() },
+                    onLeave: {
                         viewModel.leaveRoom()
                         dismiss()
                     }
-                    .padding()
-                    .background(Color.red)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-                    
-                    Spacer()
-                }
-                .padding()
-                Spacer()
-                HStack(spacing: 30) {
-                    // 마이크 버튼
-                    Button(action: { viewModel.toggleMic() }) {
-                        Image(systemName: viewModel.isMicOn ? "mic.fill" : "mic.slash.fill")
-                            .font(.system(size: 30))
-                            .foregroundColor(viewModel.isMicOn ? .white : .red)
-                    }
-
-                    // 카메라 버튼
-                    Button(action: { viewModel.toggleCamera() }) {
-                        Image(systemName: viewModel.isCameraOn ? "video.fill" : "video.slash.fill")
-                            .font(.system(size: 30))
-                            .foregroundColor(viewModel.isCameraOn ? .white : .red)
-                    }
-                }
-                .padding()
-                .background(Color.black.opacity(0.5))
-                .cornerRadius(20)
+                )
             }
-        }
-        .onAppear {
-            // 방에 들어가면서 방송자(강사) 권한으로 시작
-            print("조인합니다.")
-            viewModel.joinRoom(role: .broadcaster)
-        }
+            .onAppear {
+                viewModel.joinRoom(role: .broadcaster)
+            }
     }
 }
 
+// MARK: - Subviews
+extension CreateRoomView {
+    
+    struct StudentView: View {
+        let participantIDs: [String]
 
-//#Preview {
-//    CreateRoomView()
-//}
+        var body: some View {
+            // 추후 ForEach(participantIDs)로 영상 렌더링
+            Color.black
+        }
+    }
+
+    struct TeacherView: View {
+        let teacherID: String?
+
+        var body: some View {
+            // 추후 teacherID로 로컬 영상 렌더링
+            Color.blue
+                .frame(width: 120, height: 180)
+                .cornerRadius(12)
+        }
+    }
+
+    struct ControlPad: View {
+        let isMicOn: Bool
+        let isCameraOn: Bool
+        let onToggleMic: () -> Void
+        let onToggleCamera: () -> Void
+        let onLeave: () -> Void
+
+        var body: some View {
+            HStack(spacing: 40) {
+                Button(action: onToggleMic) {
+                    Image(systemName: isMicOn ? "mic.fill" : "mic.slash.fill")
+                }
+
+                Button(action: onToggleCamera) {
+                    Image(systemName: isCameraOn ? "video.fill" : "video.slash.fill")
+                }
+
+                Button(action: onLeave) {
+                    Image(systemName: "phone.down.fill")
+                }
+            }
+            .padding()
+            .background(Color.black.opacity(0.7))
+            .cornerRadius(20)
+            .padding(.bottom, 50)
+        }
+    }
+}

@@ -19,9 +19,11 @@ public struct WebRTCVideoView: UIViewRepresentable {
         let view = RTCMTLVideoView(frame: .zero)
         view.videoContentMode = .scaleAspectFill
         videoTrack.add(view)
+        
         return view
     }
     
+    // 추후 드래그앤 드롭 할때 사용할 것. 업데이트 되면 할것.
     public func updateUIView(_ uiView: RTCMTLVideoView, context: Context) {}
 }
 
