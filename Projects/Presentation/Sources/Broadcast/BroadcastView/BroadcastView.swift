@@ -27,7 +27,3 @@ public struct BroadcastView: View {
             }
     }
 }
-
-#Preview {
-    BroadcastView(viewModel: BroadcastViewModel())
-}
