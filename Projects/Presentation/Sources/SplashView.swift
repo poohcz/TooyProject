@@ -2,7 +2,7 @@
 //  SplashView.swift
 //  Presentation
 //
-//  Created by enm on 3/11/26.
+//  Created by 김동율 on 3/11/26.
 //
 
 import SwiftUI

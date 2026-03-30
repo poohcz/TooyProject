@@ -2,7 +2,7 @@
 //  PreviewApp.swift
 //  Presentation
 //
-//  Created by enm on 2/4/26.
+//  Created by 김동율 on 2/4/26.
 //
 
 import SwiftUI

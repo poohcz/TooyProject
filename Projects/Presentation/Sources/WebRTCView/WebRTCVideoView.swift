@@ -2,28 +2,28 @@
 //  WebRTCVideoView.swift
 //  Presentation
 //
-//  Created by enm on 2/11/26.
+//  Created by 김동율 on 2/11/26.
 //
+
 
 import SwiftUI
 import WebRTC
+import Domain
 
 public struct WebRTCVideoView: UIViewRepresentable {
-    public let videoTrack: RTCVideoTrack
-    
-    public init(videoTrack: RTCVideoTrack) {
+    public let videoTrack: any VideoTrack  // RTCVideoTrack → any VideoTrack
+
+    public init(videoTrack: any VideoTrack) {
         self.videoTrack = videoTrack
     }
-    
+
     public func makeUIView(context: Context) -> RTCMTLVideoView {
         let view = RTCMTLVideoView(frame: .zero)
         view.videoContentMode = .scaleAspectFill
-        videoTrack.add(view)
-        
+        videoTrack.addRenderer(view)  // .add(view) → .addRenderer(view)
         return view
     }
-    
-    // 추후 드래그앤 드롭 할때 사용할 것. 업데이트 되면 할것.
+
     public func updateUIView(_ uiView: RTCMTLVideoView, context: Context) {}
 }
 

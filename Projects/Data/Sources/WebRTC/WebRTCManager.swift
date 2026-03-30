@@ -2,7 +2,7 @@
 //  WebRTCManager.swift
 //  Data
 //
-//  Created by enm on 2/11/26.
+//  Created by 김동율 on 2/11/26.
 //
 
 import Foundation
@@ -11,10 +11,12 @@ import Domain
 import AVFoundation
 import SocketIO
 
+
 public final class WebRTCManager: NSObject, WebRTCManagerProtocol {
     public var localVideoTrack: RTCVideoTrack?
     public var localAudioTrack: RTCAudioTrack?
     public var onEvent: ((WebRTCEvent) -> Void)?
+    private let maxStudents = 2
     
     // WebRTC 연결 팩토리
     private let factory: RTCPeerConnectionFactory = {
@@ -60,6 +62,10 @@ public final class WebRTCManager: NSObject, WebRTCManagerProtocol {
         
         let fps = selectedFormat.videoSupportedFrameRateRanges.first?.maxFrameRate ?? 30
         videoCapturer?.startCapture(with: device, format: selectedFormat, fps: Int(fps))
+        
+        if let track = localVideoTrack {
+            onEvent?(.localVideoTrackReady(RTCVideoTrackWrapper(track: track)))
+        }
     }
     
     private func setupLocalAudio() {
@@ -85,6 +91,13 @@ public final class WebRTCManager: NSObject, WebRTCManagerProtocol {
         print("마이크 상태 변경: \(isOn ? "ON" : "OFF")")
     }
     
+    public func join() {
+        if let track = localVideoTrack {
+            onEvent?(.localVideoTrackReady(RTCVideoTrackWrapper(track: track)))
+        }
+        socket.connect()
+    }
+    
     public func setVideo(isOn: Bool) {
         // 1. 내 로컬 프리뷰 트랙 제어
         localVideoTrack?.isEnabled = isOn
@@ -101,6 +114,7 @@ public final class WebRTCManager: NSObject, WebRTCManagerProtocol {
     }
 
     private func setupSocket() {
+        // local ip임 지금은 임시
         guard let url = URL(string: "http://192.168.219.100:3000") else { return }
         
         socketManager = SocketManager(socketURL: url, config: [.log(false), .compress])
@@ -147,11 +161,22 @@ public final class WebRTCManager: NSObject, WebRTCManagerProtocol {
             }
         }
         
-        socket.connect()
     }
     
     // 특정 유저를 위한 PeerConnection 생성
+    // turn돈나감... 일단 stun으로 테스트...무료로 1년이든 6개월이든 araboja
     private func createPeerConnection(for userId: String) -> RTCPeerConnection? {
+        // 이미 연결된 유저면 기존 거 반환
+        if let existing = peerConnections[userId] { return existing }
+        
+        // 최대 인원 초과 시 거부
+        // view에 어떻게 넘길지 고민할 것.
+        guard peerConnections.count < maxStudents else {
+            print("최대 인원 초과: \(userId) 연결 거부")
+            onEvent?(.error("수업 인원이 가득 찼습니다."))
+            return nil
+        }
+        
         let config = RTCConfiguration()
         config.iceServers = [RTCIceServer(urlStrings: ["stun:stun.l.google.com:19302"])]
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
@@ -207,13 +232,13 @@ extension WebRTCManager: RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {}
     
-    // 영상이 도착하면 뷰모델로 던짐! 개어렵네진짜 클린아키텍처 -__;;;;
+    // 영상이 도착하면 뷰모델로 던짐! 아오 복잡해. webrtc를 domain에서 몰라야 하기 때문에 한번더 깜싼다. 즉, import Webrtc를 안한다.(도메인에서)
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
         if let track = stream.videoTracks.first {
             // 어떤 사람한테서 온 영상인지 ID를 찾음
             if let userId = peerConnections.first(where: { $0.value == peerConnection })?.key {
                 print("[WebRTCManager] 비디오 트랙 수신 완료: \(userId)")
-                onEvent?(.videoTrackAdded(userId, track))
+                onEvent?(.videoTrackAdded(userId, RTCVideoTrackWrapper(track: track)))
             }
         }
     }
@@ -228,7 +253,7 @@ extension WebRTCManager: RTCPeerConnectionDelegate {
         if let userId = peerConnections.first(where: { $0.value == peerConnection })?.key {
             let candidateData: [String: Any] = [
                 "targetId": userId, "senderId": myUserId,
-                "candidate": ["sdp": candidate.sdp, "sdpMLineIndex": candidate.sdpMLineIndex, "sdpMid": candidate.sdpMid]
+                "candidate": ["sdp": candidate.sdp, "sdpMLineIndex": candidate.sdpMLineIndex, "sdpMid": candidate.sdpMid ?? ""]
             ]
             socket.emit("ice_candidate", candidateData)
         }

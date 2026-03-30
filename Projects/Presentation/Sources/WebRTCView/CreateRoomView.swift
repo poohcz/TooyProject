@@ -2,7 +2,7 @@
 //  CreateRoomView.swift
 //  Presentation
 //
-//  Created by enm on 2/11/26.
+//  Created by 김동율 on 2/11/26.
 //
 
 import SwiftUI
@@ -16,16 +16,9 @@ public struct CreateRoomView: View {
     }
 
     public var body: some View {
-        StudentView(participantIDs: viewModel.remoteParticipantIDs)
+        StudentView(layout: viewModel.layout)
             .background(Color.black)
             .ignoresSafeArea()
-            
-            .overlay(alignment: .topTrailing) {
-                TeacherView(track: viewModel.getLocalVideoTrack())
-                    .padding(.top, 50)
-                    .padding(.trailing, 16)
-            }
-
             .overlay(alignment: .bottom) {
                 ControlPad(
                     isMicOn: viewModel.isMicOn,
@@ -46,24 +39,46 @@ public struct CreateRoomView: View {
 
 // MARK: - Subviews
 extension CreateRoomView {
-    
+
     struct StudentView: View {
-        let participantIDs: [String]
+        let layout: WebRTCViewModel.RoomLayout
 
         var body: some View {
-            // 추후 ForEach(participantIDs)로 영상 렌더링
-            Color.black
-        }
-    }
+            switch layout {
+            case .empty:
+                Color.black
 
-    struct TeacherView: View {
-        let teacherID: String?
+            case .oneToOne(let remote, let local):
+                ZStack(alignment: .topTrailing) {
+                    WebRTCVideoView(videoTrack: remote)
+                        .ignoresSafeArea()
+                    if let local {
+                        WebRTCVideoView(videoTrack: local)
+                            .frame(width: 100, height: 150)
+                            .cornerRadius(12)
+                            .padding(.top, 60)
+                            .padding(.trailing, 16)
+                    }
+                }
 
-        var body: some View {
-            // 추후 teacherID로 로컬 영상 렌더링
-            Color.blue
-                .frame(width: 120, height: 180)
-                .cornerRadius(12)
+            case .oneToTwo(let remotes, let local):
+                VStack(spacing: 2) {
+                    if let local {
+                        WebRTCVideoView(videoTrack: local)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        Color.black
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    HStack(spacing: 2) {
+                        ForEach(remotes.indices, id: \.self) { i in
+                            WebRTCVideoView(videoTrack: remotes[i])
+                        }
+                    }
+                    .frame(height: UIScreen.main.bounds.height * 0.35)
+                }
+                .ignoresSafeArea()
+            }
         }
     }
 
@@ -78,14 +93,18 @@ extension CreateRoomView {
             HStack(spacing: 40) {
                 Button(action: onToggleMic) {
                     Image(systemName: isMicOn ? "mic.fill" : "mic.slash.fill")
+                        .foregroundColor(.white)
+                        .font(.title2)
                 }
-
                 Button(action: onToggleCamera) {
                     Image(systemName: isCameraOn ? "video.fill" : "video.slash.fill")
+                        .foregroundColor(.white)
+                        .font(.title2)
                 }
-
                 Button(action: onLeave) {
                     Image(systemName: "phone.down.fill")
+                        .foregroundColor(.white)
+                        .font(.title2)
                 }
             }
             .padding()
