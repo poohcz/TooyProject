@@ -1,15 +1,15 @@
 //
-//  BroadcastViewModel.swift
+//  TeacherViewModel.swift
 //  Presentation
 //
 //  Created by 김동율 on 1/7/26.
 //
 
-// BroadcastViewModel.swift
+
 import AVFoundation
 import HaishinKit
 
-public final class BroadcastViewModel: ObservableObject {
+public final class TeacherViewModel: ObservableObject {
 
     private let rtmpConnection = RTMPConnection()
     private lazy var rtmpStream = RTMPStream(connection: rtmpConnection)

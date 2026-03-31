@@ -9,7 +9,7 @@ import Data
 
 public struct RootView: View {
     @StateObject private var webRTCViewModel: WebRTCViewModel
-    @StateObject private var broadcastViewModel = BroadcastViewModel()
+    @StateObject private var broadcastViewModel = TeacherViewModel()
     
     public init() {
         let manager = WebRTCManager()
@@ -24,7 +24,7 @@ public struct RootView: View {
                 .toolbarBackground(Color(uiColor: .systemBackground), for: .tabBar)
                 .tabItem { Label("수업", systemImage: "video.fill") }.tag(0)
                 
-            BroadcastView(viewModel: broadcastViewModel)
+            TeacherView(viewModel: broadcastViewModel)
                 .toolbarBackground(.visible, for: .tabBar)
                 .toolbarBackground(Color(uiColor: .systemBackground), for: .tabBar)
                 .tabItem { Label("라이브", systemImage: "antenna.radiowaves.left.and.right") }.tag(1)
