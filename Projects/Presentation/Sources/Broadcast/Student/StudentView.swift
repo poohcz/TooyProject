@@ -11,48 +11,46 @@
 import SwiftUI
 
 struct StudentView: View {
-    @StateObject private var viewModel: StudentViewModel
-
-    init(viewModel: StudentViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    @StateObject private var studentViewModel: StudentViewModel
+    @StateObject private var chatViewModel: ChatViewModel
+    
+    init(studentViewModel: StudentViewModel, chatViewModel: ChatViewModel) {
+        _studentViewModel = StateObject(wrappedValue: studentViewModel)
+        _chatViewModel = StateObject(wrappedValue: chatViewModel)
     }
-
+    
     var body: some View {
         VStack(spacing: 0) {
-            Text("수강생 라이브 화면")
-                .font(.headline)
-                .padding()
-
-            Group {
-                if let player = viewModel.player {
-                    CustomStudentPlayer(player: player)
-                        .frame(height: 250)
-                        .background(Color.black)
+            ZStack(alignment: .topTrailing) {
+                if let player = studentViewModel.player {
+                    StudentPlayerView(player: player)
+                        .frame(height: UIScreen.main.bounds.height * 0.45)
                 } else {
                     ZStack {
-                        Color.black.frame(height: 250)
+                        Color.black
                         ProgressView("방송 연결 중...")
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             .foregroundColor(.white)
                     }
+                    .frame(height: UIScreen.main.bounds.height * 0.45)
                 }
-            }
-
-            Spacer()
-
-            VStack(spacing: 10) {
-                Text("4444")
-                    .font(.subheadline)
-                    .bold()
                 
-                Text("123123")
-                    .font(.caption)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.gray)
+                HStack(spacing: 4) {
+                    Image(systemName: "eye.fill")
+                    Text("\(chatViewModel.viewerCount)")
+                }
+                .font(.caption)
+                .foregroundColor(.white)
+                .padding(6)
+                .background(Color.black.opacity(0.6))
+                .cornerRadius(8)
+                .padding(12)
             }
-            .padding()
+            
+            ChatView(viewModel: chatViewModel)
         }
-        .onAppear { viewModel.onAppear() }
-        .onDisappear { viewModel.onDisappear() }
+        .ignoresSafeArea(edges: .top)
+        .onAppear { studentViewModel.onAppear() }
+        .onDisappear { studentViewModel.onDisappear() }
     }
 }

@@ -6,15 +6,19 @@
 //
 
 
+import Foundation
 import AVFoundation
 import HaishinKit
+import Domain
 
-public final class TeacherViewModel: ObservableObject {
+@MainActor
+public class TeacherViewModel: ObservableObject {
+
+    @Published public var isStreaming: Bool = false
+    @Published public var statusMsg: String = "대기 중"
 
     private let rtmpConnection = RTMPConnection()
     private lazy var rtmpStream = RTMPStream(connection: rtmpConnection)
-
-    @Published public var statusMsg = "대기 중"
 
     public init() {
         rtmpConnection.timeout = 15
@@ -22,36 +26,29 @@ public final class TeacherViewModel: ObservableObject {
         rtmpConnection.addEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
     }
 
-    // asyncAfter 제거 → connectSuccess 이벤트에서 publish
     @objc private func rtmpStatusHandler(_ notification: Notification) {
         guard
             let data = notification.userInfo?["data"] as? ASObject,
             let code = data["code"] as? String
         else { return }
 
-        print("RTMP 이벤트: \(code)")
-
-        DispatchQueue.main.async {
-            switch code {
-            case RTMPConnection.Code.connectSuccess.rawValue:
-                self.rtmpStream.publish("test")
-                self.statusMsg = "연결됨"
-
-            case RTMPConnection.Code.connectFailed.rawValue,
-                 RTMPConnection.Code.connectClosed.rawValue:
-                self.statusMsg = "연결 실패"
-
-            default:
-                break
-            }
+        switch code {
+        case RTMPConnection.Code.connectSuccess.rawValue:
+            rtmpStream.publish("test")
+            isStreaming = true
+            statusMsg = "방송 중"
+        case RTMPConnection.Code.connectFailed.rawValue,
+             RTMPConnection.Code.connectClosed.rawValue:
+            isStreaming = false
+            statusMsg = "연결 실패"
+        default:
+            break
         }
     }
 
     @objc private func rtmpErrorHandler(_ notification: Notification) {
-        print("RTMP 에러: \(notification)")
-        DispatchQueue.main.async {
-            self.statusMsg = "연결 실패"
-        }
+        isStreaming = false
+        statusMsg = "연결 실패"
     }
 
     public func startSession() {
@@ -60,15 +57,14 @@ public final class TeacherViewModel: ObservableObject {
         )
         rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio))
         rtmpStream.videoSettings.bitRate = 300 * 1000
-
-        statusMsg = "🔄 연결 중..."
+        statusMsg = "연결 중..."
         rtmpConnection.connect("rtmp://192.168.219.100:1935/live")
-        // publish는 connectSuccess에서 호출됨
     }
 
     public func stopSession() {
         rtmpStream.close()
         rtmpConnection.close()
+        isStreaming = false
         statusMsg = "대기 중"
     }
 

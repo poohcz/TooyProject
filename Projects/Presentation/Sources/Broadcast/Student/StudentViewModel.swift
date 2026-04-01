@@ -8,12 +8,14 @@
 
 
 import Foundation
-import Combine
+import AVFoundation
+import Domain
 
 @MainActor
 final class StudentViewModel: ObservableObject {
-    @Published private(set) var isPlaying: Bool = false
-    
+    @Published private(set) var player: AVPlayer?
+    @Published private(set) var isConnected: Bool = false
+
     private let useCase: StudentUseCase
     private let streamURL: URL
 
@@ -22,19 +24,16 @@ final class StudentViewModel: ObservableObject {
         self.streamURL = streamURL
     }
 
-    /// 💡 뷰에서 직접 player를 꺼내 쓸 수 있도록 UseCase의 객체를 전달만 함
-    var player: Any? {
-        useCase.getPlayer()
-    }
-
     func onAppear() {
         useCase.configureAudioSession()
         useCase.executePlay(url: streamURL)
-        isPlaying = true
+        player = useCase.getPlayer()
+        isConnected = true
     }
 
     func onDisappear() {
         useCase.executeStop()
-        isPlaying = false
+        player = nil
+        isConnected = false
     }
 }

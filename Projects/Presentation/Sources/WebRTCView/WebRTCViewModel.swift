@@ -9,7 +9,7 @@ import Foundation
 import Domain
 
 @MainActor
-public final class WebRTCViewModel: ObservableObject {
+public class WebRTCViewModel: ObservableObject {
 
     @Published public var localVideoTrack: (any VideoTrack)?
     @Published public var remoteStreams: [String: any VideoTrack] = [:]
