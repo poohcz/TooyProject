@@ -8,16 +8,21 @@
 
 import SwiftUI
 import HaishinKit
+import Domain
 
-struct TeacherPlayerView: UIViewRepresentable {
-    let stream: RTMPStream
+public struct TeacherPlayerView: UIViewRepresentable {
+    private let stream: StreamProvider
 
-    func makeUIView(context: Context) -> MTHKView {
+    public init(stream: StreamProvider) {
+        self.stream = stream
+    }
+
+    public func makeUIView(context: Context) -> MTHKView {
         let view = MTHKView(frame: .zero)
         view.videoGravity = .resizeAspectFill
-        view.attachStream(stream)
+        stream.attach(to: view)
         return view
     }
 
-    func updateUIView(_ uiView: MTHKView, context: Context) {}
+    public func updateUIView(_ uiView: MTHKView, context: Context) {}
 }

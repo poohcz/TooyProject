@@ -11,6 +11,10 @@ let project = Project(
         .remote(
             url: "https://github.com/stasel/WebRTC.git",
             requirement: .upToNextMajor(from: "114.0.0")
+        ),
+        .remote(
+            url: "https://github.com/shogo4405/HaishinKit.swift.git",
+            requirement: .upToNextMajor(from: "1.9.0")
         )
     ],
     targets: [
@@ -25,7 +29,8 @@ let project = Project(
                 .project(target: "Domain", path: "../Domain"),
                 // 💡 2. 사용할 라이브러리들을 장착합니다.
                 .package(product: "SocketIO"),
-                .package(product: "WebRTC")
+                .package(product: "WebRTC"),
+                .package(product: "HaishinKit")
             ]
         )
     ]

@@ -38,6 +38,8 @@ mapper하나 더 만들어서 도메인 뷰 나눔. 즉 dto로 백엔드에서 �
 비즈니스 로직: 예를 들어 서버는 age: 19를 주지만, 우리 앱(Domain)은 isAdult: Bool이라는 기준이 필요할 때 여기서 변환합니다.
 entity예시 굿. ㅇㅋㅇㅋ 
 
+provider왜 했는지? view haishin이 의존되어서 stream만 던지기위해서. 좀더 가다듬을 것.
+
 
 
 

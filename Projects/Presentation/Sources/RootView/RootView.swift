@@ -22,7 +22,9 @@ public struct RootView: View {
         _webRTCViewModel = StateObject(wrappedValue: WebRTCViewModel(useCase: webRTCUseCase))
 
         // Teacher
-        _teacherViewModel = StateObject(wrappedValue: TeacherViewModel())
+        let teacherRepository = TeacherRepositoryImpl()
+        let teacherUseCase = TeacherUseCaseImpl(repository: teacherRepository)
+        _teacherViewModel = StateObject(wrappedValue: TeacherViewModel(useCase: teacherUseCase))
 
         // Chat
         _chatViewModel = StateObject(wrappedValue: ChatViewModel())
@@ -42,10 +44,6 @@ public struct RootView: View {
             TeacherView(teacherViewModel: teacherViewModel, chatViewModel: chatViewModel)
                 .tabItem { Label("라이브", systemImage: "antenna.radiowaves.left.and.right") }
                 .tag(1)
-
-            ChatView(viewModel: chatViewModel)
-                .tabItem { Label("채팅", systemImage: "message.fill") }
-                .tag(2)
 
             StudentView(studentViewModel: studentViewModel, chatViewModel: chatViewModel)
                 .tabItem { Label("수강생", systemImage: "play.tv.fill") }

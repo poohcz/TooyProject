@@ -10,5 +10,5 @@ import Foundation
 public protocol TeacherUseCase {
     func startStream(rtmpURL: String)
     func stopStream()
-    
+    func getStreamProvider() -> StreamProvider
 }
