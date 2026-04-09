@@ -23,23 +23,23 @@ public class WebRTCViewModel: ObservableObject {
     }
 
     public enum RoomLayout {
-        case empty
-        case oneToOne(remote: any VideoTrack, local: (any VideoTrack)?)
-        case oneToTwo(remotes: [any VideoTrack], local: (any VideoTrack)?)
-    }
-
-    public var layout: RoomLayout {
-        switch remoteStreams.count {
-        case 0:
-            return .empty
-        case 1:
-            let track = remoteStreams.values.first!
-            return .oneToOne(remote: track, local: localVideoTrack)
-        default:
-            let tracks = remoteParticipantIDs.compactMap { remoteStreams[$0] }
-            return .oneToTwo(remotes: tracks, local: localVideoTrack)
+            case empty(local: (any VideoTrack)?)
+            case oneToOne(remote: any VideoTrack, local: (any VideoTrack)?)
+            case oneToTwo(remotes: [any VideoTrack], local: (any VideoTrack)?)
         }
-    }
+
+        public var layout: RoomLayout {
+            switch remoteStreams.count {
+            case 0:
+                return .empty(local: localVideoTrack)
+            case 1:
+                let track = remoteStreams.values.first!
+                return .oneToOne(remote: track, local: localVideoTrack)
+            default:
+                let tracks = remoteParticipantIDs.compactMap { remoteStreams[$0] }
+                return .oneToTwo(remotes: tracks, local: localVideoTrack)
+            }
+        }
 
     public init(useCase: WebRTCUseCase) {
         self.useCase = useCase

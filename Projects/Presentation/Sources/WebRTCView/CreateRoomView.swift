@@ -45,8 +45,13 @@ extension CreateRoomView {
 
         var body: some View {
             switch layout {
-            case .empty:
-                Color.black
+            case .empty(let local):
+                if let local {
+                    WebRTCVideoView(videoTrack: local)
+                        .ignoresSafeArea()
+                } else {
+                    Color.black
+                }
 
             case .oneToOne(let remote, let local):
                 ZStack(alignment: .topTrailing) {
