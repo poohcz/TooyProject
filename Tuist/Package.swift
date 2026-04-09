@@ -5,18 +5,21 @@ import PackageDescription
     import struct ProjectDescription.PackageSettings
 
     let packageSettings = PackageSettings(
-        // Customize the product types for specific package product
-        // Default is .staticFramework
-        // productTypes: ["Alamofire": .framework,]
-        productTypes: [:]
+        productTypes: [
+            "HaishinKit": .framework,
+            "WebRTC": .framework,
+            "SocketIO": .framework,
+            "Lottie": .framework
+        ]
     )
 #endif
 
 let package = Package(
     name: "ToyProject",
     dependencies: [
-        // Add your own dependencies here:
-        // .package(url: "https://github.com/Alamofire/Alamofire", from: "5.0.0"),
-        // You can read more about dependencies here: https://docs.tuist.io/documentation/tuist/dependencies
+        .package(url: "https://github.com/shogo4405/HaishinKit.swift.git", from: "1.9.0"),
+        .package(url: "https://github.com/socketio/socket.io-client-swift.git", from: "16.0.0"),
+        .package(url: "https://github.com/stasel/WebRTC.git", from: "114.0.0"),
+        .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.4.1")
     ]
 )
