@@ -17,37 +17,37 @@ public class WebRTCViewModel: ObservableObject {
     @Published public var isCameraOn: Bool = true
 
     private let useCase: WebRTCUseCase
+    private var joinTask: Task<Void, Never>?
 
     public var remoteParticipantIDs: [String] {
         Array(remoteStreams.keys)
     }
 
     public enum RoomLayout {
-            case empty(local: (any VideoTrack)?)
-            case oneToOne(remote: any VideoTrack, local: (any VideoTrack)?)
-            case oneToTwo(remotes: [any VideoTrack], local: (any VideoTrack)?)
-        }
+        case empty(local: (any VideoTrack)?)
+        case oneToOne(remote: any VideoTrack, local: (any VideoTrack)?)
+        case oneToTwo(remotes: [any VideoTrack], local: (any VideoTrack)?)
+    }
 
-        public var layout: RoomLayout {
-            switch remoteStreams.count {
-            case 0:
-                return .empty(local: localVideoTrack)
-            case 1:
-                let track = remoteStreams.values.first!
-                return .oneToOne(remote: track, local: localVideoTrack)
-            default:
-                let tracks = remoteParticipantIDs.compactMap { remoteStreams[$0] }
-                return .oneToTwo(remotes: tracks, local: localVideoTrack)
-            }
+    public var layout: RoomLayout {
+        // ✅ 최대 2명으로 제한
+        let remotes = remoteParticipantIDs.prefix(2).compactMap { remoteStreams[$0] }
+        switch remotes.count {
+        case 0: return .empty(local: localVideoTrack)
+        case 1: return .oneToOne(remote: remotes[0], local: localVideoTrack)
+        default: return .oneToTwo(remotes: Array(remotes), local: localVideoTrack)
         }
+    }
 
     public init(useCase: WebRTCUseCase) {
         self.useCase = useCase
     }
 
     public func joinRoom(role: UserRole) {
-        Task {
+        joinTask?.cancel()
+        joinTask = Task {
             for await event in await useCase.executeJoin(role: role) {
+                guard !Task.isCancelled else { break }
                 switch event {
                 case .localVideoTrackReady(let track):
                     self.localVideoTrack = track
@@ -67,6 +67,8 @@ public class WebRTCViewModel: ObservableObject {
     }
 
     public func leaveRoom() {
+        joinTask?.cancel()
+        joinTask = nil
         useCase.executeLeave()
     }
 

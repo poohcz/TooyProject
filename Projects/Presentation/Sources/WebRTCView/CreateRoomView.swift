@@ -67,23 +67,24 @@ extension CreateRoomView {
                 }
 
             case .oneToTwo(let remotes, let local):
-                VStack(spacing: 2) {
-                    if let local {
-                        WebRTCVideoView(videoTrack: local)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    } else {
-                        Color.black
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                    HStack(spacing: 2) {
-                        ForEach(remotes.indices, id: \.self) { i in
-                            WebRTCVideoView(videoTrack: remotes[i])
+                GeometryReader { geo in
+                    VStack(spacing: 2) {
+                        if let local {
+                            WebRTCVideoView(videoTrack: local)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        } else {
+                            Color.black
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
+                        HStack(spacing: 2) {
+                            ForEach(remotes.indices, id: \.self) { i in
+                                WebRTCVideoView(videoTrack: remotes[i])
+                            }
+                        }
+                        .frame(height: geo.size.height * 0.35)
                     }
-                    .frame(height: UIScreen.main.bounds.height * 0.35)
                 }
-                .ignoresSafeArea()
-            }
+                .ignoresSafeArea()            }
         }
     }
 
